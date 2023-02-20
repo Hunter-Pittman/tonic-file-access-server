@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"path/filepath"
+	"tonic-file-access-server/config"
 	"tonic-file-access-server/middlewares/logger"
 
 	"github.com/gin-gonic/gin"
@@ -10,9 +11,7 @@ import (
 )
 
 func NewRouter() *gin.Engine {
-	// Env variables
-
-	//dst := "C:\\test"
+	dst := config.Setup()
 
 	router := gin.Default()
 
@@ -43,7 +42,7 @@ func NewRouter() *gin.Engine {
 		newFileName := uuid.New().String() + extension
 
 		// The file is received, so let's save it
-		if err := c.SaveUploadedFile(file, "C:\\test\\"+newFileName); err != nil {
+		if err := c.SaveUploadedFile(file, dst+newFileName); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"message": "Unable to save the file",
 			})
