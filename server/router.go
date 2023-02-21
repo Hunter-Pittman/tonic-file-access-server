@@ -1,32 +1,28 @@
 package server
 
 import (
-	"io"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"tonic-file-access-server/config"
 	"tonic-file-access-server/middlewares/auth"
-	"tonic-file-access-server/middlewares/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter() *gin.Engine {
-	dst := config.Setup()
+func NewRouter(apiToken string) *gin.Engine {
+	dst := config.SetupDir()
 
-	// Disable Console Color, you don't need console color when writing the logs to file.
-	gin.DisableConsoleColor()
+	// // Disable Console Color, you don't need console color when writing the logs to file.
+	// gin.DisableConsoleColor()
 
-	// Logging to a file.
-	f, _ := os.Create("gin.log")
-	gin.DefaultWriter = io.MultiWriter(f)
+	// // Logging to a file.
+	// f, _ := os.Create("gin.log")
+	// gin.DefaultWriter = io.MultiWriter(f)
 
 	router := gin.Default()
 
-	router.Use(logger.RequestID())
-	router.Use(auth.TokenAuthMiddleware())
+	router.Use(auth.TokenAuthMiddleware(apiToken))
 
 	router.LoadHTMLGlob("templates/*")
 
