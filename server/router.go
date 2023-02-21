@@ -3,11 +3,12 @@ package server
 import (
 	"net/http"
 	"path/filepath"
+	"strings"
 	"tonic-file-access-server/config"
+	"tonic-file-access-server/middlewares/auth"
 	"tonic-file-access-server/middlewares/logger"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func NewRouter() *gin.Engine {
@@ -16,7 +17,7 @@ func NewRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.Use(logger.RequestID())
-	//router.Use(auth.TokenAuthMiddleware())
+	router.Use(auth.TokenAuthMiddleware())
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -28,7 +29,6 @@ func NewRouter() *gin.Engine {
 	router.POST("/upload", func(c *gin.Context) {
 		file, err := c.FormFile("file")
 
-		// The file cannot be received.
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"message": "No file is received",
@@ -36,21 +36,47 @@ func NewRouter() *gin.Engine {
 			return
 		}
 
-		// Retrieve file information
-		extension := filepath.Ext(file.Filename)
-		// Generate random file name for the new uploaded file so it doesn't override the old file with same name
-		newFileName := uuid.New().String() + extension
-
-		// The file is received, so let's save it
-		if err := c.SaveUploadedFile(file, dst+newFileName); err != nil {
+		if err := c.SaveUploadedFile(file, dst+file.Filename); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"message": "Unable to save the file",
 			})
 			return
 		}
 
-		// File saved successfully. Return proper result
-		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded."})
+		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded at /download-user-file/" + file.Filename})
+	})
+
+	router.GET("/download-user-file/:filename", func(c *gin.Context) {
+		fileName := c.Param("filename")
+		targetPath := filepath.Join(dst, fileName)
+
+		if !strings.HasPrefix(filepath.Clean(targetPath), dst) {
+			c.String(403, "Look like you attacking me")
+			return
+		}
+
+		c.Header("Content-Description", "File Transfer")
+		c.Header("Content-Transfer-Encoding", "binary")
+		c.Header("Content-Disposition", "attachment; filename="+fileName)
+		c.Header("Content-Type", "application/octet-stream")
+		c.File(targetPath)
+	})
+
+	router.GET("/listdirectory", func(c *gin.Context) {
+		files, err := filepath.Glob(dst + "*")
+		var fileNames []string
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Unable to list the files",
+			})
+			return
+		}
+
+		for _, path := range files {
+			fileNames = append(fileNames, filepath.Base(path))
+		}
+
+		c.JSON(http.StatusOK, gin.H{"files": fileNames})
 	})
 
 	return router
