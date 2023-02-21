@@ -1,0 +1,57 @@
+{{ define "index.tmpl" }}
+<head>
+    <title>{{ .title }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+</head>
+
+<html>
+    <style>
+        .navbar{
+            background:#000;
+        }
+        .nav-link , .navbar-brand{
+            color: #ff0;
+            cursor: pointer;
+        }
+        .nav-link{
+            margin-right: 1em !important;
+            font-family: killthenoise;
+            text-shadow: 0 0 10px rgba(255,255,255,1) , 0 0 20px rgba(255,255,255,1) , 0 0 30px rgba(255,255,255,1) , 0 0 40px #ff00de , 0 0 70px #ff00de , 0 0 80px #ff00de , 0 0 100px #ff00de;
+            -webkit-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+            -moz-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+            -o-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+            transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+        }
+        .nav-link:hover{
+            color: #ff0;
+            text-shadow: 0 0 10px rgba(255,255,255,1) , 0 0 20px rgba(255,255,255,1) , 0 0 30px rgba(255,255,255,1) , 0 0 40px #00ffff , 0 0 70px #00ffff , 0 0 80px #00ffff , 0 0 100px #00ffff;
+        }
+        .navbar-collapse{
+        justify-content: center;
+        }
+        .navbar-toggler{
+        background:#fff !important;
+        }
+    </style>
+    <body class="container">
+        <nav class="navbar navbar-expand-lg fixed-top ">
+        <a class="navbar-brand" href="#">
+            <img src="assets/tonic.webp" width="30" height="30" class="d-inline-block align-top" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-4">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Upload</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </body>
+</html>
+{{ end }}
+

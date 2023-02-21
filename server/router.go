@@ -28,9 +28,17 @@ func NewRouter() *gin.Engine {
 	router.Use(logger.RequestID())
 	router.Use(auth.TokenAuthMiddleware())
 
+	router.LoadHTMLGlob("templates/*")
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
+		})
+	})
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "Home Page",
 		})
 	})
 
