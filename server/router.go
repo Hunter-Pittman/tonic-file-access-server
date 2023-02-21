@@ -1,7 +1,9 @@
 package server
 
 import (
+	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"tonic-file-access-server/config"
@@ -13,6 +15,13 @@ import (
 
 func NewRouter() *gin.Engine {
 	dst := config.Setup()
+
+	// Disable Console Color, you don't need console color when writing the logs to file.
+	gin.DisableConsoleColor()
+
+	// Logging to a file.
+	f, _ := os.Create("gin.log")
+	gin.DefaultWriter = io.MultiWriter(f)
 
 	router := gin.Default()
 
