@@ -5,7 +5,7 @@ import (
 	"runtime"
 )
 
-func Setup() string {
+func SetupDir() string {
 	if runtime.GOOS == "windows" {
 		dir := "C:\\tonic\\storage\\"
 
@@ -21,7 +21,7 @@ func Setup() string {
 		return dir
 	} else {
 		// This is the linux path creation to determine storage locations
-		dir := "/src/tonic/storage/"
+		dir := "/srv/tonic/storage/"
 
 		_, err := os.Stat(dir)
 		if os.IsNotExist(err) {
