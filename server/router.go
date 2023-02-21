@@ -1,14 +1,20 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
 	"tonic-file-access-server/config"
 	"tonic-file-access-server/middlewares/auth"
 
+	"github.com/Jeffail/gabs"
 	"github.com/gin-gonic/gin"
 )
+
+type File struct {
+	Name string
+}
 
 func NewRouter(apiToken string) *gin.Engine {
 	dst := config.SetupDir()
@@ -33,8 +39,27 @@ func NewRouter(apiToken string) *gin.Engine {
 	})
 
 	router.GET("/", func(c *gin.Context) {
+		//query the /listdirectory endpoint to get the list of avaliable files
+		//and pass it to the index.tmpl
+		resp, err := http.Get("http://localhost:5000/listdirectory")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Unable to list the files",
+			})
+			return
+		}
+		//parse the json response
+		jsonParsed, err := gabs.ParseJSONBuffer(resp.Body)
+		files, _ := jsonParsed.Search("files").Children()
+		filestruct := make([]File, 0)
+		for _, child := range files {
+			fmt.Println(child.Data().(string))
+			filestruct = append(filestruct, File{Name: child.Data().(string)})
+		}
+
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Home Page",
+			"files": filestruct,
 		})
 	})
 

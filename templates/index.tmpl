@@ -51,7 +51,12 @@
                 </ul>
             </div>
         </nav>
+
+        <h1>
+        {{ range $file := .files }}
+            <a href="/download-user-file/{{ .Name }}">{{ .Name }}</a><br>
+        {{ end }}
+        </h1>
     </body>
 </html>
 {{ end }}
-
