@@ -1,19 +1,21 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
+	"time"
 	"tonic-file-access-server/config"
-	"tonic-file-access-server/middlewares/auth"
 
 	"github.com/Jeffail/gabs"
 	"github.com/gin-gonic/gin"
 )
 
 type File struct {
-	Name string
+	Name    string
+	Size    int64
+	ModTime time.Time
 }
 
 func NewRouter(apiToken string) *gin.Engine {
@@ -28,7 +30,7 @@ func NewRouter(apiToken string) *gin.Engine {
 
 	router := gin.Default()
 
-	router.Use(auth.TokenAuthMiddleware(apiToken))
+	//router.Use(auth.TokenAuthMiddleware(apiToken))
 
 	router.LoadHTMLGlob("templates/*")
 
@@ -41,20 +43,30 @@ func NewRouter(apiToken string) *gin.Engine {
 	router.GET("/", func(c *gin.Context) {
 		//query the /listdirectory endpoint to get the list of avaliable files
 		//and pass it to the index.tmpl
-		resp, err := http.Get("http://localhost:5000/listdirectory")
-		if err != nil {
+		resp, _ := http.Get("http://localhost:5000/listdirectory")
+		responseCode := resp.StatusCode
+		if responseCode != 200 {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"message": "Unable to list the files",
 			})
+
 			return
 		}
 		//parse the json response
 		jsonParsed, err := gabs.ParseJSONBuffer(resp.Body)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Unable parse json",
+			})
+			return
+		}
 		files, _ := jsonParsed.Search("files").Children()
 		filestruct := make([]File, 0)
 		for _, child := range files {
-			fmt.Println(child.Data().(string))
-			filestruct = append(filestruct, File{Name: child.Data().(string)})
+			newName := child.Search("Name").Data().(string)
+			newSize := child.Search("Size").Data().(float64)
+			newModTime, _ := time.Parse("2006-01-02 15:04", child.Search("ModTime").Data().(string))
+			filestruct = append(filestruct, File{Name: newName, Size: int64(newSize), ModTime: newModTime})
 		}
 
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
@@ -102,7 +114,7 @@ func NewRouter(apiToken string) *gin.Engine {
 
 	router.GET("/listdirectory", func(c *gin.Context) {
 		files, err := filepath.Glob(dst + "*")
-		var fileNames []string
+		var fullFiles []File
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"message": "Unable to list the files",
@@ -111,10 +123,17 @@ func NewRouter(apiToken string) *gin.Engine {
 		}
 
 		for _, path := range files {
-			fileNames = append(fileNames, filepath.Base(path))
+			stats, err := os.Stat(path)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+					"message": "Unable to stat files",
+				})
+			}
+
+			fullFiles = append(fullFiles, File{Name: stats.Name(), Size: stats.Size(), ModTime: stats.ModTime()})
 		}
 
-		c.JSON(http.StatusOK, gin.H{"files": fileNames})
+		c.JSON(http.StatusOK, gin.H{"files": fullFiles})
 	})
 
 	return router
