@@ -32,6 +32,10 @@ func NewRouter(apiToken string) *gin.Engine {
 
 	//router.Use(auth.TokenAuthMiddleware(apiToken))
 
+	//load assets path
+	router.StaticFile("/tonic.webp", "./assets/tonic.webp")
+	router.StaticFile("/ginglass.mp4", "./assets/ginglass.mp4")
+	//load templates
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/ping", func(c *gin.Context) {
@@ -89,7 +93,7 @@ func NewRouter(apiToken string) *gin.Engine {
 				return
 			}
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded at /download/[FILENAME]"})
+		c.HTML(http.StatusOK, "upload.tmpl", gin.H{})
 	})
 
 	router.GET("/download/:filename", func(c *gin.Context) {

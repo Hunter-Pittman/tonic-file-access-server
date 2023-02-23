@@ -1,11 +1,5 @@
 {{ define "index.tmpl" }}
-<head>
-    <title>{{ .title }}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
-</head>
-
+{{ template "header" }}
 <html>
     <style>
         #download_link {
@@ -72,29 +66,7 @@
 
     </style>
     <body class="container">
-        <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href="#">
-            <img src="../assets/tonic.webp" width="30" height="30" class="d-inline-block align-top" alt="">
-        </a>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-4">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <form action="/upload" method="post" enctype="multipart/form-data">
-                                <div>
-                                    <label for="file">Choose file to upload</label>
-                                    <input type="file" id="file" name="file" multiple/>
-                                </div>
-                                <div>
-                                    <button>Submit</button>
-                                </div>
-                            </form>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
+        {{ template "nav" }}
         <div class="container">
             <div class="col-sm-5" id="namesep">
                 <h1>

@@ -1,0 +1,26 @@
+{{ define "nav" }}
+    <nav class="navbar navbar-expand-lg fixed-top">
+        
+        <a class="navbar-brand" href="/">
+            <img src="tonic.webp" width="55" height="60" class="d-inline-block align-top" alt="">
+        </a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <form action="/upload" method="post" enctype="multipart/form-data">
+                            <div>
+                                <label for="file">Choose file to upload</label>
+                                <input type="file" id="file" name="file" multiple/>
+                            </div>
+                            <div>
+                                <button>Submit</button>
+                            </div>
+                        </form>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+{{ end }}

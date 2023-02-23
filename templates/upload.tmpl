@@ -1,0 +1,22 @@
+{{ define "upload.tmpl" }}
+<html>
+    {{ template "header" }}
+    <style>
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    <body>
+        <video width="680" height="580" autoplay loop playsinline muted>
+            <source src="ginglass.mp4" type="video/mp4">
+        </video>
+    </body>
+    <script>
+        setTimeout(function() {
+            window.location.href = "/";
+        }, 2500);
+    </script>
+</html>
+{{ end }}
