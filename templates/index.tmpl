@@ -8,6 +8,31 @@
 
 <html>
     <style>
+        #download_link {
+            margin-right: 1em !important;
+            text-shadow: 0 0 10px rgba(255,255,255,1) , 0 0 20px rgba(255,255,255,1) , 0 0 30px rgba(255,255,255,1) , 0 0 40px #ff00de , 0 0 70px #ff00de , 0 0 80px #ff00de , 0 0 100px #ff00de;
+            -webkit-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+            -moz-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+            -o-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+            transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+        }
+        #download_link:hover {
+            color: #ff0;
+            text-shadow: 0 0 10px rgba(255,255,255,1) , 0 0 20px rgba(255,255,255,1) , 0 0 30px rgba(255,255,255,1) , 0 0 40px #00ffff , 0 0 70px #00ffff , 0 0 80px #00ffff , 0 0 100px #00ffff;
+        }
+        a {
+            color: #ff0;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+        h1 {
+            color: rgb(0 255 169);
+        }
+        body {
+            background: #212529;
+        }
         .navbar{
             background:#000;
         }
@@ -17,16 +42,6 @@
         }
         .nav-link{
             margin-right: 1em !important;
-            font-family: killthenoise;
-            text-shadow: 0 0 10px rgba(255,255,255,1) , 0 0 20px rgba(255,255,255,1) , 0 0 30px rgba(255,255,255,1) , 0 0 40px #ff00de , 0 0 70px #ff00de , 0 0 80px #ff00de , 0 0 100px #ff00de;
-            -webkit-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
-            -moz-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
-            -o-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
-            transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
-        }
-        .nav-link:hover{
-            color: #ff0;
-            text-shadow: 0 0 10px rgba(255,255,255,1) , 0 0 20px rgba(255,255,255,1) , 0 0 30px rgba(255,255,255,1) , 0 0 40px #00ffff , 0 0 70px #00ffff , 0 0 80px #00ffff , 0 0 100px #00ffff;
         }
         .navbar-collapse{
         justify-content: center;
@@ -34,38 +49,70 @@
         .navbar-toggler{
         background:#fff !important;
         }
+        #sizetext {
+            size: .5em;
+        }
+        #datetext {
+            size: .5em;
+        }
+
     </style>
     <body class="container">
-        <nav class="navbar navbar-expand-lg fixed-top ">
+        <nav class="navbar navbar-expand-lg fixed-top">
         <a class="navbar-brand" href="#">
-            <img src="assets/tonic.webp" width="30" height="30" class="d-inline-block align-top" alt="">
+            <img src="../assets/tonic.webp" width="30" height="30" class="d-inline-block align-top" alt="">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-4">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Upload</a>
+                        <a class="nav-link" href="#">
+                            <form action="/upload" method="post" enctype="multipart/form-data">
+                                <div>
+                                    <label for="file">Choose file to upload</label>
+                                    <input type="file" id="file" name="file" multiple/>
+                                </div>
+                                <div>
+                                    <button>Submit</button>
+                                </div>
+                            </form>
+                        </a>
                     </li>
                 </ul>
             </div>
         </nav>
 
-        
+        <div class="container">
+            <div class="col-sm-5">
+                <h1>
+                    Name:
+                </h1>
+            </div>
+            <div class="col-sm-2">
+                <h1 id="sizetext">
+                    Size(bytes):
+                <h1>
+            </div>
+            <div class="col-sm-4">
+                <h1 id="datetext">
+                    Time Uploaded:
+                </h1>
+            </div>
+        </div>
+
+
         {{ range $file := .files }}
             <div class="container">
-                <div class="col-lg-4">
+                <div class="col-sm-5">
                     <h1>
-                        <a href="/download-user-file/{{ .Name }}">{{ .Name }}</a><br>
+                        <a id="download_link" href="/download-user-file/{{ .Name }}">{{ .Name }}</a><br>
                     </h1>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-sm-2">
                     <h1 id="sizetext">
                         {{ .Size }}<br>
                     <h1>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-sm-4">
                     <h1 id="datetext">
                         {{ .ModTime }}<br>
                     </h1>
