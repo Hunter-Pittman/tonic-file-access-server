@@ -77,26 +77,6 @@ func NewRouter(apiToken string) *gin.Engine {
 
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 	router.POST("/upload", func(c *gin.Context) {
-		file, err := c.FormFile("file")
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "No file is received",
-			})
-			return
-		}
-
-		if err := c.SaveUploadedFile(file, dst+file.Filename); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Unable to save the file",
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded at /download/" + file.Filename})
-	})
-
-	router.MaxMultipartMemory = 8 << 20 // 8 MiB
-	router.POST("/multiupload", func(c *gin.Context) {
 		// Multipart form
 		form, _ := c.MultipartForm()
 		files := form.File["file[]"]
