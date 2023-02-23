@@ -112,7 +112,7 @@ func NewRouter(apiToken string) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded at /download/[FILENAME]"})
 	})
 
-	router.GET("/download-user-file/:filename", func(c *gin.Context) {
+	router.GET("/download/:filename", func(c *gin.Context) {
 		fileName := c.Param("filename")
 		targetPath := filepath.Join(dst, fileName)
 
