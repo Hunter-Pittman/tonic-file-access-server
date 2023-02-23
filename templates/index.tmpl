@@ -52,11 +52,27 @@
             </div>
         </nav>
 
-        <h1>
+        
         {{ range $file := .files }}
-            <a href="/download-user-file/{{ .Name }}">{{ .Name }}</a><br>
+            <div class="container">
+                <div class="col-lg-4">
+                    <h1>
+                        <a href="/download-user-file/{{ .Name }}">{{ .Name }}</a><br>
+                    </h1>
+                </div>
+                <div class="col-lg-3">
+                    <h1 id="sizetext">
+                        {{ .Size }}<br>
+                    <h1>
+                </div>
+                <div class="col-lg-4">
+                    <h1 id="datetext">
+                        {{ .ModTime }}<br>
+                    </h1>
+                </div>
+            </div>
         {{ end }}
-        </h1>
+        
     </body>
 </html>
 {{ end }}
