@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 	"tonic-file-access-server/config"
 
 	"github.com/Jeffail/gabs"
@@ -15,7 +14,7 @@ import (
 type File struct {
 	Name    string
 	Size    int64
-	ModTime time.Time
+	ModTime string
 }
 
 func NewRouter(apiToken string) *gin.Engine {
@@ -35,6 +34,7 @@ func NewRouter(apiToken string) *gin.Engine {
 	//load assets path
 	router.StaticFile("/tonic.webp", "./assets/tonic.webp")
 	router.StaticFile("/ginglass.mp4", "./assets/ginglass.mp4")
+	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	//load templates
 	router.LoadHTMLGlob("templates/*")
 
@@ -69,7 +69,7 @@ func NewRouter(apiToken string) *gin.Engine {
 		for _, child := range files {
 			newName := child.Search("Name").Data().(string)
 			newSize := child.Search("Size").Data().(float64)
-			newModTime, _ := time.Parse("2006-01-02 15:04", child.Search("ModTime").Data().(string))
+			newModTime, _ := child.Search("ModTime").Data().(string)
 			filestruct = append(filestruct, File{Name: newName, Size: int64(newSize), ModTime: newModTime})
 		}
 
@@ -131,7 +131,7 @@ func NewRouter(apiToken string) *gin.Engine {
 				})
 			}
 
-			fullFiles = append(fullFiles, File{Name: stats.Name(), Size: stats.Size(), ModTime: stats.ModTime()})
+			fullFiles = append(fullFiles, File{Name: stats.Name(), Size: (stats.Size() / 1024), ModTime: (stats.ModTime()).Format("2006-01-02 15:04")})
 		}
 
 		c.JSON(http.StatusOK, gin.H{"files": fullFiles})
