@@ -87,6 +87,7 @@ func NewRouter(apiToken string) *gin.Engine {
 
 		for _, file := range files {
 			if err := c.SaveUploadedFile(file, dst+file.Filename); err != nil {
+				println(err)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 					"message": "Unable to save the file",
 				})
