@@ -19,17 +19,17 @@ func TokenAuthMiddleware(apiToken string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("X-Auth-Token")
+		cookie, _ := c.Cookie("tonic_cookie")
 
 		if token == "" {
-			respondWithError(c, 401, "API token required")
-			return
-		}
-
-		if token != requiredToken {
+			if cookie == "" {
+				respondWithError(c, 401, "API token required")
+				return
+			}
+		} else if token != requiredToken {
 			respondWithError(c, 401, "Invalid API token")
 			return
 		}
 
-		c.Next()
 	}
 }

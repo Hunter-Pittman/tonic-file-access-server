@@ -1,13 +1,14 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"tonic-file-access-server/config"
+	"tonic-file-access-server/middlewares/auth"
 
-	"github.com/Jeffail/gabs"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,7 +30,7 @@ func NewRouter(apiToken string) *gin.Engine {
 
 	router := gin.Default()
 
-	//router.Use(auth.TokenAuthMiddleware(apiToken))
+	router.Use(auth.TokenAuthMiddleware(apiToken))
 
 	//load assets path
 	router.StaticFile("/tonic.webp", "./assets/tonic.webp")
@@ -45,37 +46,13 @@ func NewRouter(apiToken string) *gin.Engine {
 	})
 
 	router.GET("/", func(c *gin.Context) {
-		//query the /listdirectory endpoint to get the list of avaliable files
-		//and pass it to the index.tmpl
-		resp, _ := http.Get("http://localhost:5000/listdirectory")
-		responseCode := resp.StatusCode
-		if responseCode != 200 {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Unable to list the files",
-			})
 
-			return
-		}
 		//parse the json response
-		jsonParsed, err := gabs.ParseJSONBuffer(resp.Body)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Unable parse json",
-			})
-			return
-		}
-		files, _ := jsonParsed.Search("files").Children()
-		filestruct := make([]File, 0)
-		for _, child := range files {
-			newName := child.Search("Name").Data().(string)
-			newSize := child.Search("Size").Data().(float64)
-			newModTime, _ := child.Search("ModTime").Data().(string)
-			filestruct = append(filestruct, File{Name: newName, Size: int64(newSize), ModTime: newModTime})
-		}
+		files := listDirectory(dst)
 
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Home Page",
-			"files": filestruct,
+			"files": files,
 		})
 	})
 
@@ -138,4 +115,23 @@ func NewRouter(apiToken string) *gin.Engine {
 	})
 
 	return router
+}
+
+func listDirectory(dst string) []File {
+	files, err := filepath.Glob(dst + "*")
+	if err != nil {
+		fmt.Println("%v", err)
+	}
+	var fullFiles []File
+
+	for _, path := range files {
+		stats, err := os.Stat(path)
+		if err != nil {
+			fmt.Println("%v", err)
+		}
+		fullFiles = append(fullFiles, File{Name: stats.Name(), Size: (stats.Size() / 1024), ModTime: (stats.ModTime()).Format("2006-01-02 15:04")})
+	}
+
+	return fullFiles
+
 }
