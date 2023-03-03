@@ -15,6 +15,4 @@ func main() {
 	}
 
 	server.Init(*apiToken)
-
-	//server.Init("bruh")
 }

@@ -2,12 +2,12 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"tonic-file-access-server/config"
-	"tonic-file-access-server/middlewares/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +30,7 @@ func NewRouter(apiToken string) *gin.Engine {
 
 	router := gin.Default()
 
-	router.Use(auth.TokenAuthMiddleware(apiToken))
+	//router.Use(auth.TokenAuthMiddleware(apiToken))
 
 	//load assets path
 	router.StaticFile("/tonic.webp", "./assets/tonic.webp")
